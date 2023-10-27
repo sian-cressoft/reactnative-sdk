@@ -149,3 +149,19 @@ jobs:
       - name: Build example for iOS
         run: |
           yarn turbo run build:ios --cache-dir="${{ env.TURBO_CACHE_DIR }}"
+
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # Setup .npmrc file to publish to npm
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+          registry-url: 'https://registry.npmjs.org'
+          # Defaults to the user or organization that owns the workflow file
+          scope: '@digiotech'
+      - run: yarn
+      - run: yarn npm publish --access public // for Yarn version 1, use `yarn publish` instead
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

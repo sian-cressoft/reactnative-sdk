@@ -1,5 +1,7 @@
 # Digio React Native SDK
 
+[![npm version](https://badge.fury.io/js/@digiotech%2Freact-native.svg)](https://badge.fury.io/js/@digiotech%2Freact-native)
+
 Official React Native SDK for Digio Gateway Integration
 
 ## Installation

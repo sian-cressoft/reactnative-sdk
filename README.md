@@ -114,3 +114,30 @@ function YourComponent() {
 | documentId  | string        | Document ID Passed from the parent app. For eg: `KID22040413040490937VNTC6LAP8KWD`                                                                                                                          |
 | message     | string        | Error message in case of crash or failure                                                                                                                                                                   |
 | permissions | Array<string> | List of mandatory permissions which are not given during kyc journey                                                                                                                                        |
+
+
+### Android Permissions
+
+Add required permissions in the manifest file. Note - This is the common SDK for various KYC flows
+
+```
+<!--RECORD_AUDIO and MODIFY_AUDIO_SETTINGS Permission required for Video KYC -->
+<uses-permission android:name="android.permission.RECORD_AUDIO" />
+<uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+
+/** Required for geotagging */
+<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+
+/** Required for ID card analysis, selfie and face match**/
+<uses-permission android:name="android.permission.CAMERA" />
+
+<uses-feature android:name="android.hardware.camera.autofocus"   android:required="false" />
+```
+A fintech Android app can't access the following permission
+- Read_external_storage
+- Read_media_images
+- Read_contacts
+- Access_fine_location
+- Read_phone_numbers
+- Read_media_videos

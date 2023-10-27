@@ -141,3 +141,26 @@ A fintech Android app can't access the following permission
 - Access_fine_location
 - Read_phone_numbers
 - Read_media_videos
+
+### IOS Permission
+
+Permissions need to add in your info.plist
+```
+  /**  Camera permission incase of selfie/video KYC/ capture document  **/
+  <key>NSCameraUsageDescription</key>
+  <string>$(PRODUCT_NAME) would like to access your camera.</string>
+  <key>NSPhotoLibraryUsageDescription</key>
+  <string>$(PRODUCT_NAME) would like to access your photo.</string>
+
+  /**  Microphone permission incase of video KYC  **/
+  <key>NSMicrophoneUsageDescription</key>
+  <string>$(PRODUCT_NAME) would like to access your microphone to capture video.</string>
+
+  /** Location permission for geo tagging for camera/video kyc/ selfie **/
+  <key>NSLocationWhenInUseUsageDescription</key>
+  <string>$(PRODUCT_NAME) would like to access your location.</string>
+  <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+  <string>$(PRODUCT_NAME) would like to access your location.</string>
+```
+Note : All permissions should be checked and taken before triggering Digio SDK
+  

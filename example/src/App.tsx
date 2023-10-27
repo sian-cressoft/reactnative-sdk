@@ -1,18 +1,33 @@
 import * as React from 'react';
 
 import { StyleSheet, View, Text } from 'react-native';
-import { multiply } from 'digio-react-native';
+import { Digio, Environment } from 'digio-react-native';
+import type { GatewayEvent } from 'digio-react-native';
 
 export default function App() {
-  const [result, setResult] = React.useState<number | undefined>();
-
   React.useEffect(() => {
-    multiply(3, 7).then(setResult);
+    const digio = new Digio({ environment: Environment.SANDBOX });
+
+    const digioGatewayEventSubscription = digio.addGatewayEventListener(
+      (event: GatewayEvent) => {
+        console.log(event);
+      }
+    );
+    digio
+      .start('', '', '')
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => console.error(err));
+
+    return () => {
+      digioGatewayEventSubscription.remove();
+    };
   }, []);
 
   return (
     <View style={styles.container}>
-      <Text>Result: {result}</Text>
+      <Text>Digio Starting</Text>
     </View>
   );
 }

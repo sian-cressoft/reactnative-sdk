@@ -1,31 +1,114 @@
-# digio-react-native
+# Digio React Native SDK
 
-SDK for invoking client side journey for any of Digio request
+Official React Native SDK for Digio Gateway Integration
 
 ## Installation
 
 ```sh
-npm install digio-react-native
+yarn install @digiotech/react-native
 ```
 
-## Usage
+## Documentation
 
-```js
-import { multiply } from 'digio-react-native';
+Documentation of Digio Gateway Integration and their usage is available at <https://documentation.digio.in>
 
-// ...
+### Basic Usage
 
-const result = await multiply(3, 7);
+Instantiate the Digio instance with `environment` & other options
+
+```tsx
+import { Digio, DigioConfig, DigioResponse } from '@digiotech/react-native';
+
+const config: DigioConfig = { environment: Environment.PRODUCTION };
+const digio = new Digio(config);
+const documentId = "<document_id>";
+const identifier = "<email_or_phone>";
+const digioResponse: DigioResponse = await digio.start(documentId, identifier);
 ```
 
-## Contributing
+### Consuming gateway events [Optional]
 
-See the [contributing guide](CONTRIBUTING.md) to learn how to contribute to the repository and the development workflow.
+You can consume events and understand the flow or the journey of the user as he is performing it.
 
-## License
+For a complete list of events and the payload associated with it, refer [here](https://docs.google.com/document/d/15LHtjGyXd_JNM0de8uH9zB7WllJikRl1d9e4qdy0-C0/edit?usp=sharing)
 
-MIT
+```tsx
+import { useEffect } from 'react';
+import { Digio, DigioConfig, GatewayEvent } from '@digiotech/react-native';
 
----
+function YourComponent() {
+  useEffect(() => {
+    const gatewayEventListener = digio.addGatewayEventListener(
+      (event: GatewayEvent) => {
+        // Do some operation on the received events
+      }
+    );
 
-Made with [create-react-native-library](https://github.com/callstack/react-native-builder-bob)
+    return () => {
+      gatewayEventListener.remove();
+    }
+  }, []);
+}
+```
+
+### Complete Usage
+
+```tsx
+import { useEffect } from 'react';
+import { Digio, DigioConfig, GatewayEvent } from '@digiotech/react-native';
+
+function YourComponent() {
+  useEffect(() => {
+    const gatewayEventListener = digio.addGatewayEventListener(
+      (event: GatewayEvent) => {
+        // Do some operation on the received events
+      }
+    );
+
+    return () => {
+      gatewayEventListener.remove();
+    }
+  }, []);
+
+  const triggerDigioGateway = async () => {
+    const config: DigioConfig = { environment: Environment.PRODUCTION };
+    const digio = new Digio(config);
+    const documentId = "<document_id>";
+    const identifier = "<email_or_phone>";
+    const tokenId = "<gateway_token_id";
+    const digioResponse: DigioResponse = await digio.start(documentId, identifier, tokenId);
+
+  }
+}
+```
+
+## SDK Reference
+
+### DigioConfig
+
+**Parameters:**
+
+| Name            | Type    | Description                                                                            |
+|-----------------|---------|----------------------------------------------------------------------------------------|
+| environment*    | string  | Environment for which you want to open gateway. One of `sandbox` or `production`       |
+| logo            | string  | Pass an URL of your brand logo. **Note:** Pass an optimised image url for best results |
+| theme           | string  | Options for changing the appearance of the gateway. See below for options under it.    |
+
+**Theme:**
+
+| Name           | Type    | Description                                                              |
+|----------------|---------|--------------------------------------------------------------------------|
+| primaryColor   | string  | Your brand colour's HEX code to alter CTA (call-to-action) button colors |
+| secondaryColor | string  | HEX Code to alter text colors                                            |
+| fontFamily     | string  | Font Family of your choice. For eg: Crimson Pro                          |
+| fontFormat     | string  | Format of the Font Family Provided. For eg: ’woff2’,’ot’,’tt’            |
+| fontUrl        | string  | Font Family URL. For eg: '{font_family_url}.woff2'                       |
+
+### DigioResponse [Response received from Gateway]
+
+| Name        | Type          | Description                                                                                                                                                                                                 |
+|-------------|---------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| code*       | number        | SUCCESS = 1001 <br /> FAIL = 1002 <br /> CANCEL = -1000 <br /> WEBVIEW_CRASH = 1003 <br /> WEBVIEW_ERROR = 10017 <br /> SDK_CRASH = 1004 <br /> Location/Camera/MicroPhone Permission Denied By User = 1008 |
+| documentId  | string        | Document ID Passed from the parent app. For eg: `KID22040413040490937VNTC6LAP8KWD`                                                                                                                          |
+| message     | string        | Error message in case of crash or failure                                                                                                                                                                   |
+| permissions | Array<string> | List of mandatory permissions which are not given during kyc journey                                                                                                                                        |

@@ -1,8 +1,8 @@
 import * as React from 'react';
 
 import { StyleSheet, View, Text } from 'react-native';
-import { Digio, Environment } from 'digio-react-native';
-import type { GatewayEvent } from 'digio-react-native';
+import { Digio, Environment } from '@digiotech/react-native';
+import type { GatewayEvent } from '@digiotech/react-native';
 
 export default function App() {
   React.useEffect(() => {
@@ -14,7 +14,11 @@ export default function App() {
       }
     );
     digio
-      .start('', '', '')
+      .start(
+        'KID231030124448842XMIZVCXZS9EX67',
+        'ramanand@digio.in',
+        'GWT2310301244520089UKGFPMP7WQUV4'
+      )
       .then((res) => {
         console.log(res);
       })

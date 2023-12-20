@@ -17,6 +17,7 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
@@ -40,7 +41,7 @@ import in.digio.sdk.gateway.model.DigioConfig;
 import in.digio.sdk.gateway.model.DigioTheme;
 
 @ReactModule(name = DigioReactNativeModule.NAME)
-public class DigioReactNativeModule extends ReactContextBaseJavaModule {
+public class DigioReactNativeModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
   public static final String NAME = "DigioReactNative";
 
   public static final String AAR_VERSION = "4.0.8";
@@ -127,6 +128,7 @@ public class DigioReactNativeModule extends ReactContextBaseJavaModule {
   public DigioReactNativeModule(ReactApplicationContext reactContext) {
     super(reactContext);
     reactContext.addActivityEventListener(activityEventListener);
+    this.getReactApplicationContext().addLifecycleEventListener(this);
   }
 
   @Override
@@ -138,6 +140,11 @@ public class DigioReactNativeModule extends ReactContextBaseJavaModule {
   @Override
   public void onHostPause() {
     this.getReactApplicationContext().unregisterReceiver(eventBroadcastReceiver);
+  }
+
+  @Override
+  public void onHostDestroy() {
+
   }
 
   @Override

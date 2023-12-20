@@ -127,11 +127,17 @@ public class DigioReactNativeModule extends ReactContextBaseJavaModule {
   public DigioReactNativeModule(ReactApplicationContext reactContext) {
     super(reactContext);
     reactContext.addActivityEventListener(activityEventListener);
-    ContextCompat.registerReceiver(
-      reactContext, eventBroadcastReceiver,
-      new IntentFilter(DigioConstants.GATEWAY_EVENT),
-      ContextCompat.RECEIVER_NOT_EXPORTED
-    );
+  }
+
+  @Override
+  public void onHostResume() {
+    IntentFilter filter = new IntentFilter(DigioConstants.GATEWAY_EVENT);
+    this.getReactApplicationContext().registerReceiver(eventBroadcastReceiver, filter);
+  }
+
+  @Override
+  public void onHostPause() {
+    this.getReactApplicationContext().unregisterReceiver(eventBroadcastReceiver);
   }
 
   @Override

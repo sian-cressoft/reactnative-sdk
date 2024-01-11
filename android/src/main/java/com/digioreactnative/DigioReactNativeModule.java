@@ -198,7 +198,7 @@ public class DigioReactNativeModule extends ReactContextBaseJavaModule implement
 
       intent.putExtra("config", digioConfig);
       intent.putExtra("aar_version", AAR_VERSION);
-      if (documentId.startsWith("ENA")){
+      if (documentId.startsWith("ENA") || documentId.startsWith("DID")){
         intent.putExtra("navigation_graph", in.digio.sdk.esign.R.navigation.esign);
       }else {
         intent.putExtra("navigation_graph", in.digio.sdk.kyc.R.navigation.workflow);

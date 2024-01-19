@@ -10,14 +10,13 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 
 import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
@@ -198,9 +197,9 @@ public class DigioReactNativeModule extends ReactContextBaseJavaModule implement
 
       intent.putExtra("config", digioConfig);
       intent.putExtra("aar_version", AAR_VERSION);
-      if (documentId.startsWith("ENA") || documentId.startsWith("DID")){
+      if (documentId.startsWith("ENA") || documentId.startsWith("DID")) {
         intent.putExtra("navigation_graph", in.digio.sdk.esign.R.navigation.esign);
-      }else {
+      } else {
         intent.putExtra("navigation_graph", in.digio.sdk.kyc.R.navigation.workflow);
       }
 

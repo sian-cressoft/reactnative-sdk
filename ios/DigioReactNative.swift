@@ -2,11 +2,13 @@ import DigiokycSDK
 import React
 import UIKit
 import Foundation
+import DigioEsignSDK
 
 @objc(DigioReactNative)
-class DigioReactNative: RCTEventEmitter, DigioKycResponseDelegate {
+class DigioReactNative: RCTEventEmitter, DigioKycResponseDelegate,DigioEsignDelegate {
+
     var result: RCTPromiseResolveBlock!
-    
+
     override func supportedEvents() -> [String]! {
         return ["gatewayEvent"]
     }
@@ -28,31 +30,24 @@ class DigioReactNative: RCTEventEmitter, DigioKycResponseDelegate {
                         var fontFamily: String?
                         var fontUrl: String?
                         var environment: String = "production"
-                        
+
                         additionalParams = additionalData as? [String : String];
-                        
+
                         environment = config?["environment"] as? String ?? "production";
                         primaryColor = config?["primaryColor"] as? String;
                         logo = config?["logo"] as? String;
                         fontFormat = config?["fontFormat"] as? String;
                         fontFamily = config?["fontFamily"] as? String;
                         fontUrl = config?["fontUrl"] as? String;
-                        
-                        // Your existing code here...
-                        try DigioKycBuilder()
-                            .withController(viewController: rootViewController!)
-                            .setDocumentId(documentId: documentId)
-                            .setKycResponseDelegate(delegate: self)
-                            .setIdentifier(identifier: identifier)
-                            .setEnvironment(environment: environment.elementsEqual("sandbox") ? DigioEnvironment.SANDBOX : DigioEnvironment.PRODUCTION)
-                            .setPrimaryColor(hexColor: primaryColor ?? "")
-                            .setTokenId(tokenId: tokenId ?? "")
-                            .setFontFormat(fontFormat: fontFormat ?? "")
-                            .setFontFamily(fontFamily: fontFamily ?? "")
-                            .setFontUrl(fontUrl: fontUrl ?? "")
-                            .setLogo(logo: logo ?? "")
-                            .setAdditionalParams(additionalParams: additionalParams ?? [:])
-                            .build()
+
+                        if documentId.hasPrefix("ENA") || documentId.hasPrefix("DID") {
+                            try self.startSign(rootViewController: rootViewController!, documentId: documentId, identifier: identifier, tokenId: tokenId, environment: environment, primaryColor: primaryColor, fontFormat: fontFormat, fontFamily: fontFamily, fontUrl: fontUrl, logo: logo, additionalParams: additionalParams)
+                                .build()
+                        }else{
+                            try self.startKyc(rootViewController: rootViewController!, documentId: documentId, identifier: identifier, tokenId: tokenId, environment: environment, primaryColor: primaryColor, fontFormat: fontFormat, fontFamily: fontFamily, fontUrl: fontUrl, logo: logo, additionalParams: additionalParams)
+                                .build()
+                        }
+
                     } catch let error {
                         print("Exception --> \(error.localizedDescription)")
                     }
@@ -61,7 +56,46 @@ class DigioReactNative: RCTEventEmitter, DigioKycResponseDelegate {
                 }
             }
     }
-//
+
+    private func startKyc(rootViewController: UIViewController,documentId: String, identifier: String, tokenId: String?,
+                          environment: String,primaryColor: String?,fontFormat: String?,
+                          fontFamily: String?,fontUrl: String?,logo: String?,additionalParams: [String:String]?) -> DigioKycBuilder {
+        print("...........starting kyc.............")
+        return DigioKycBuilder()
+            .withController(viewController: rootViewController)
+            .setDocumentId(documentId: documentId)
+            .setKycResponseDelegate(delegate: self)
+            .setIdentifier(identifier: identifier)
+            .setEnvironment(environment: environment.elementsEqual("sandbox") ? DigioEnvironment.SANDBOX : DigioEnvironment.PRODUCTION)
+            .setPrimaryColor(hexColor: primaryColor ?? "")
+            .setTokenId(tokenId: tokenId ?? "")
+            .setFontFormat(fontFormat: fontFormat ?? "")
+            .setFontFamily(fontFamily: fontFamily ?? "")
+            .setFontUrl(fontUrl: fontUrl ?? "")
+            .setLogo(logo: logo ?? "")
+            .setAdditionalParams(additionalParams: additionalParams ?? [:])
+
+    }
+
+    private func startSign(rootViewController: UIViewController,documentId: String, identifier: String, tokenId: String?,
+                              environment: String,primaryColor: String?,fontFormat: String?,fontFamily: String?,fontUrl: String?,logo: String?,additionalParams: [String:String]?) -> DigioBuilder{
+        print("...........starting sign.............")
+        return DigioBuilder()
+            .withController(viewController: rootViewController)
+            .setDocumentId(documentId: documentId)
+//            .setDelegate(delegate: self)
+            .setIdentifier(identifier: identifier)
+            .setEnvironment(environment: environment.elementsEqual("sandbox") ? DigioEnvironment.SANDBOX : DigioEnvironment.PRODUCTION)
+            .setPrimaryColor(hexColor: primaryColor ?? "")
+            .setTokenId(tokenId: tokenId ?? "")
+            .setFontFormat(fontFormat: fontFormat ?? "")
+            .setFontFamily(fontFamily: fontFamily ?? "")
+            .setFontUrl(fontUrl: fontUrl ?? "")
+            .setLogo(logo: logo ?? "")
+            .setAdditionalParams(additionalParams: additionalParams ?? [:])
+            .setServiceMode(serviceMode: DigioServiceMode.OTP)
+    }
+
     private func formatJson(response: String)->[String: Any]{
         let kycResponse = try! JSONDecoder().decode(DigioKycResponse.self, from: response.data(using: .utf8)!)
         var resultMap: [String: Any] = [:]
@@ -82,6 +116,7 @@ class DigioReactNative: RCTEventEmitter, DigioKycResponseDelegate {
         return resultMap
     }
 
+    /** Kyc sdk callback */
     func onDigioKycResponseSuccess(successResponse: String) {
         print("Success \(successResponse)")
         if self.result != nil {
@@ -100,7 +135,7 @@ class DigioReactNative: RCTEventEmitter, DigioKycResponseDelegate {
         print("Gateway event \(event)")
         self.sendEvent(withName: "gatewayEvent", body: convertToDictionary(text: event))
     }
-    
+
     func convertToDictionary(text: String) -> [String: Any]? {
         if let data = text.data(using: .utf8) {
             do {
@@ -111,4 +146,26 @@ class DigioReactNative: RCTEventEmitter, DigioKycResponseDelegate {
         }
         return nil
     }
+    /** esign sdk callbacks */
+
+    func onDigioResponseSuccess(response: String) {
+        print("Success esign \(response)")
+        if self.result != nil {
+            self.result(formatJson(response: response))
+        }
+    }
+
+    func onDigioResponseFailure(response: String) {
+        print("Failure esign \(response)")
+        if self.result != nil {
+            self.result(formatJson(response: response))
+        }
+    }
+
+    func onGatewayEvent(event: String) {
+        print("onGatewayEvent esign \(event)")
+        self.sendEvent(withName: "gatewayEvent", body: convertToDictionary(text: event))
+    }
+
+
 }

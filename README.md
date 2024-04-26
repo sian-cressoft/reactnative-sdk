@@ -86,7 +86,7 @@ function YourComponent() {
 
 ## Android
 #### Note: Incase you are using camera feature and facing black screen on camera then follow below steps
-- Add digioKycworkflow.aar file inside your react project under android/app/libs folder. [Download digio_kyc_workflow-4.0.9.aar](https://drive.google.com/file/d/1FGhaihW42uL3dqGVMohvgu7Ie5EbBKb8/view?usp=sharing)
+- Add digioKycworkflow.aar file inside your react project under android/app/libs folder. [Download digio_kyc_workflow-4.0.15.aar](https://drive.google.com/file/d/1nHeZhDBPavLxwJp0VgNrMiEZpXswENgz/view?usp=sharing)
 
 
 - Add below in your project under build.gradle file inside dependencies

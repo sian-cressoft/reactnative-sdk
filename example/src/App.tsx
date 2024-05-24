@@ -15,9 +15,9 @@ export default function App() {
     );
     digio
       .start(
-        'DID240507182157944L5FEM5BAFL6SCU',
+        'KID240524125515071XG44EYBE6KUX3R',
         'akash.kumar@digio.in',
-        'GWT240507182158398221W78VJFJNL1U'
+        'GWT2405241255150929ZJWPKOP3XJSMS'
       )
       .then((res) => {
         console.log(res);

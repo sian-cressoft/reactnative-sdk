@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.text.TextUtils;
+import android.os.Build;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -137,7 +138,8 @@ public class DigioReactNativeModule extends ReactContextBaseJavaModule implement
   public void onHostResume() {
     if (!isReceiverRegistered) {
       IntentFilter filter = new IntentFilter(DigioConstants.GATEWAY_EVENT);
-      this.getReactApplicationContext().registerReceiver(eventBroadcastReceiver, filter);
+      // this.getReactApplicationContext().registerReceiver(eventBroadcastReceiver, filter);
+      compatRegisterReceiver(this.getReactApplicationContext(), eventBroadcastReceiver, filter, true);
       isReceiverRegistered = true;
     }
     
@@ -160,6 +162,16 @@ public class DigioReactNativeModule extends ReactContextBaseJavaModule implement
   @NonNull
   public String getName() {
     return NAME;
+  }
+
+  private void compatRegisterReceiver(Context context, BroadcastReceiver receiver,
+   IntentFilter filter, boolean exported) {
+    if (Build.VERSION.SDK_INT >= 34 && context.getApplicationInfo().targetSdkVersion >= 34) {
+      context.registerReceiver(
+          receiver, filter, exported ? Context.RECEIVER_EXPORTED : Context.RECEIVER_NOT_EXPORTED);
+    } else {
+      context.registerReceiver(receiver, filter);
+    }
   }
 
   @ReactMethod

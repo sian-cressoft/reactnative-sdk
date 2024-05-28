@@ -83,7 +83,7 @@ class DigioReactNative: RCTEventEmitter, DigioKycResponseDelegate,DigioEsignDele
         return DigioBuilder()
             .withController(viewController: rootViewController)
             .setDocumentId(documentId: documentId)
-//            .setDelegate(delegate: self)
+            .setDelegate(delegate: self)
             .setIdentifier(identifier: identifier)
             .setEnvironment(environment: environment.elementsEqual("sandbox") ? DigioEnvironment.SANDBOX : DigioEnvironment.PRODUCTION)
             .setPrimaryColor(hexColor: primaryColor ?? "")
@@ -162,10 +162,10 @@ class DigioReactNative: RCTEventEmitter, DigioKycResponseDelegate,DigioEsignDele
         }
     }
 
-    func onGatewayEvent(event: String) {
-        print("onGatewayEvent esign \(event)")
-        self.sendEvent(withName: "gatewayEvent", body: convertToDictionary(text: event))
-    }
+     func onGatewayEvent(event: String) {
+         print("onGatewayEvent esign \(event)")
+         self.sendEvent(withName: "gatewayEvent", body: convertToDictionary(text: event))
+     }
 
 
 }

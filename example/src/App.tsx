@@ -6,7 +6,7 @@ import type { GatewayEvent } from '@digiotech/react-native';
 
 export default function App() {
   React.useEffect(() => {
-    const digio = new Digio({ environment: Environment.SANDBOX });
+    const digio = new Digio({ environment: Environment.PRODUCTION });
 
     const digioGatewayEventSubscription = digio.addGatewayEventListener(
       (event: GatewayEvent) => {
@@ -15,9 +15,9 @@ export default function App() {
     );
     digio
       .start(
-        'KID240524125515071XG44EYBE6KUX3R',
+        'DID240528112808735VZHHBN3ABIRI4U',
         'akash.kumar@digio.in',
-        'GWT2405241255150929ZJWPKOP3XJSMS'
+        'GWT2405281128088113V8C78WN2NKX3X'
       )
       .then((res) => {
         console.log(res);
